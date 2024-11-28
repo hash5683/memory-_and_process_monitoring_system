@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Process Monitor</title>
+    <style>
+        /* General body styling */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            /* New trendy gradient background */
+            background: linear-gradient(135deg, #6a11cb, #2575fc); /* Purple to blue gradient */
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 20px; /* Space between containers */
+        }
+
+        /* Main container styling */
+        .main-container {
+            background-color: rgba(255, 255, 255, 0.9); /* Slightly opaque white */
+            padding: 40px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        /* Heading styling */
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #0d47a1;
+        }
+
+        /* Button styling */
+        .button {
+            display: inline-block;
+            padding: 12px 20px;
+            margin: 10px;
+            font-size: 1rem;
+            color: white;
+            background: #0d47a1;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        /* Hover effect for buttons */
+        .button:hover {
+            background-color: #42a5f5;
+            transform: scale(1.1);
+        }
+
+        /* Keyframe animation for fade-in effect */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Container -->
+    <div class="main-container">
+        <h1>System Process Monitor</h1>
+        <a href="{% url 'system_stats' %}" class="button">System Stats</a>
+        <a href="{% url 'process_list' %}" class="button">View Processes</a>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Process List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 1000px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background: #0d47a1;
+            color: white;
+        }
+
+        td {
+            color: #555;
+        }
+
+        .no-processes {
+            text-align: center;
+            color: #888;
+        }
+
+        /* Style the Kill button */
+        .kill-btn {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .kill-btn:hover {
+            background-color: #d32f2f;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 12px 20px;
+            margin: 10px;
+            font-size: 1rem;
+            color: white;
+            background: #0d47a1;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        /* Hover effect for buttons */
+        .button:hover {
+            background-color: #42a5f5;
+            transform: scale(1.1);
+        }
+
+        /* Keyframe animation for fade-in effect */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Active Processes</h1>
+        {% if processes %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>PID</th>
+                        <th>Name</th>
+                        <th>CPU Usage (%)</th>
+                        <th>Memory Usage (%)</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for process in processes %}
+                        <tr>
+                            <td>{{ process.pid }}</td>
+                            <td>{{ process.name }}</td>
+                            <td>{{ process.cpu_percent }}%</td>
+                            <td>{{ process.memory_percent }}%</td>
+                            <td>
+                                <!-- Kill Button -->
+                                <button class="kill-btn" onclick="killProcess({{ process.pid }})">Kill</button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="no-processes">No active processes available.</p>
+        {% endif %}
+        <a href="{% url 'home' %}" class="button">Return to home</a>
+    </div>
+
+    <script>
+        // Function to send a POST request to kill the process
+        function killProcess(pid) {
+            // Confirm action before sending the request
+            if (confirm('Are you sure you want to kill process ' + pid + '?')) {
+                // Send POST request using fetch
+                fetch('/monitor/kill/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 'pid': pid })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Handle the response
+                    if (data.message) {
+                        alert(data.message);  // Show success message
+                        location.reload();  // Reload the page to update the process list
+                    } else if (data.error) {
+                        alert('Error: ' + data.error);  // Show error message
+                    }
+                })
+                .catch(error => {
+                    alert('There was an error with the request: ' + error);
+                });
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Stats</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #0d47a1;
+            color: white;
+        }
+
+        td {
+            color: #555;
+        }
+
+        /* Style for Kill Process Section */
+        .kill-process {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .kill-process:hover {
+            background-color: #d32f2f;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 12px 20px;
+            margin: 10px;
+            font-size: 1rem;
+            color: white;
+            background: #0d47a1;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        /* Hover effect for buttons */
+        .button:hover {
+            background-color: #42a5f5;
+            transform: scale(1.1);
+        }
+
+        /* Keyframe animation for fade-in effect */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>System Stats</h1>
+        <table>
+            <tr>
+                <th>Statistic</th>
+                <th>Value</th>
+            </tr>
+            <tr>
+                <td>CPU Usage (%)</td>
+                <td>{{ cpu_percent }}%</td>
+            </tr>
+            <tr>
+                <td>Total Memory</td>
+                <td>{{ memory_total|floatformat:2 }} Bytes</td>
+            </tr>
+            <tr>
+                <td>Used Memory</td>
+                <td>{{ memory_used|floatformat:2 }} Bytes</td>
+            </tr>
+            <tr>
+                <td>Memory Usage (%)</td>
+                <td>{{ memory_percent }}%</td>
+            </tr>
+        </table>
+
+        <div class="kill-process">
+            <label for="pid">Enter PID to Kill Process:</label>
+            <input type="number" id="pid" placeholder="Enter Process ID">
+            <button onclick="killProcess()">Kill Process</button>
+        </div>
+        <a href="{% url 'home' %}" class="button">Return to home</a>
+    </div>
+
+    <script>
+        function killProcess() {
+            var pid = document.getElementById('pid').value;
+
+            // Validate the input
+            if (!pid) {
+                alert('Please enter a valid PID.');
+                return;
+            }
+
+            // Confirm the action
+            if (confirm('Are you sure you want to kill process ' + pid + '?')) {
+                // Send POST request to kill the process
+                fetch('/monitor/kill/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 'pid': pid })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        alert(data.message);  // Show success message
+                    } else if (data.error) {
+                        alert('Error: ' + data.error);  // Show error message
+                    }
+                })
+                .catch(error => {
+                    alert('There was an error with the request: ' + error);
+                });
+            }
+        }
+    </script>
+</body>
+</html>
